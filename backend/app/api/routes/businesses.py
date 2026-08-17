@@ -27,6 +27,15 @@ async def get_businesses(
         "pagination": result["pagination"]
     }
 
+@router.get("/by-slug/{slug}", response_model=dict)
+async def get_business_by_slug(slug: str = Path(...)):
+    business = await business_service.get_business_by_slug(slug)
+    return {
+        "success": True,
+        "message": "Business retrieved successfully",
+        "data": business
+    }
+
 @router.get("/{business_id}", response_model=dict)
 async def get_business(business_id: str = Path(...)):
     business = await business_service.get_business(business_id)

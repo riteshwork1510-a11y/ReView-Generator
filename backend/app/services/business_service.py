@@ -48,6 +48,16 @@ class BusinessService:
             })
         return business
 
+    async def get_business_by_slug(self, slug: str) -> dict:
+        business = await business_repository.get_business_by_slug(slug)
+        if not business:
+            raise HTTPException(status_code=404, detail={
+                "success": False,
+                "message": "Business not found",
+                "error_code": "BUSINESS_NOT_FOUND"
+            })
+        return business
+
     async def update_business(self, business_id: str, business_in: BusinessUpdate) -> dict:
         self._validate_id(business_id)
         

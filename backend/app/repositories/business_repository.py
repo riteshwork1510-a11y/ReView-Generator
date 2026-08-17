@@ -11,12 +11,32 @@ class BusinessRepository:
     def get_collection(self):
         return db.client[settings.MONGODB_DATABASE].businesses
 
+    async def get_business_by_slug(self, slug: str) -> dict:
+        collection = self.get_collection()
+        doc = await collection.find_one({"slug": slug})
+        return serialize_mongo_business(doc) if doc else None
+
     async def create_business(self, business_data: dict) -> dict:
+        import re
         collection = self.get_collection()
         
         now = datetime.datetime.utcnow()
         business_data["created_at"] = now
         business_data["updated_at"] = now
+        
+        # Generate slug
+        base_str = f"{business_data.get('company_name', '')}-{business_data.get('owner_name', '')}"
+        base_slug = re.sub(r'[^a-z0-9]+', '-', base_str.lower()).strip('-')
+        if not base_slug:
+            base_slug = "business"
+            
+        slug = base_slug
+        counter = 1
+        while await collection.find_one({"slug": slug}):
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+            
+        business_data["slug"] = slug
         
         result = await collection.insert_one(business_data)
         business_data["_id"] = result.inserted_id
