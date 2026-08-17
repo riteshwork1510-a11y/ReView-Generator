@@ -15,7 +15,7 @@ class BusinessBase(BaseModel):
     email: Optional[EmailStr] = Field(None, max_length=255)
     owner_name: Optional[str] = Field(None, max_length=150)
     owner_role: Optional[str] = Field(None, max_length=100)
-    image_url: Optional[str] = Field(None, max_length=1000)
+    image_url: Optional[str] = Field(None, description="URL or base64 data URL of the image")
     slug: Optional[str] = Field(None, max_length=350)
 
     @field_validator('google_review_url', mode='after')
@@ -50,7 +50,7 @@ class BusinessUpdate(BaseModel):
     email: Optional[EmailStr] = Field(None, max_length=255)
     owner_name: Optional[str] = Field(None, max_length=150)
     owner_role: Optional[str] = Field(None, max_length=100)
-    image_url: Optional[str] = Field(None, max_length=1000)
+    image_url: Optional[str] = Field(None, description="URL or base64 data URL of the image")
 
     @field_validator('google_review_url', mode='after')
     def validate_https(cls, v):
